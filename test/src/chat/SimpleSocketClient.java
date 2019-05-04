@@ -11,30 +11,28 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 
-
 public class SimpleSocketClient {
-	
+
 	String ServerName;
 	int port;
-	
+	String message = "";
+
 	public SimpleSocketClient(String ServerName, int port) {
 		this.ServerName = ServerName;
 		this.port = port;
 	}
-	
 
-	String message =  "dslp/1.2\r\nrequest time\r\ndslp/end\r\n";
 	{
 
 		try {
-			Socket socket = openSocket(ServerName, port);			
-				
+			Socket socket = openSocket(ServerName, port);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private String writeToAndReadFromSocket(Socket socket, String writeTo) throws Exception {
+	public String writeToAndReadFromSocket(Socket socket, String writeTo) throws Exception {
 		try {
 			// write text to the socket
 			BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -52,7 +50,7 @@ public class SimpleSocketClient {
 
 				}
 
-				if (str.contains("")) {
+				if (str.contains("_")) {
 
 				}
 
@@ -77,7 +75,7 @@ public class SimpleSocketClient {
 	 * currently sets the socket timeout value to 10 seconds. (A second version of
 	 * this method could allow the user to specify this timeout.)
 	 */
-	private Socket openSocket(String server, int port) throws Exception {
+	public Socket openSocket(String server, int port) throws Exception {
 		Socket socket;
 
 		// create a socket with a timeout
@@ -100,14 +98,15 @@ public class SimpleSocketClient {
 		}
 	}
 
-	public void showGroupNotify (String groupName, Socket socket) throws Exception {
-		String message = "dslp/1.2\\r\\ngroup notify\\r\\n\\"+groupName+"\\r\\\\ndslp/end\\r\\n";
+	public void showGroupNotify(String groupName, Socket socket) throws Exception {
+		String message = "dslp/1.2\\r\\ngroup notify\\r\\n\\" + groupName + "\\r\\\\ndslp/end\\r\\n";
 		String start = writeToAndReadFromSocket(socket, message);
-		String[] abc = start.split("\r\n");			
-		
+		String[] abc = start.split("\r\n");
+
 		for (int i = 0; i < abc.length; i++) {
 			if (abc[i].contains("group notify")) {
-				while(!abc[i].contains("dslp/end")){ // might be more than one line with chatmessages. so print all lines till /end
+				while (!abc[i].contains("dslp/end")) { // might be more than one line with chatmessages. so print all
+														// lines till /end
 					System.out.println(abc[i]);
 				}
 			}
@@ -115,7 +114,7 @@ public class SimpleSocketClient {
 				break;
 			}
 
-		}		
+		}
 	}
-	
+
 }
