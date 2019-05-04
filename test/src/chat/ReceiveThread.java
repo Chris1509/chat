@@ -10,5 +10,4 @@ public class ReceiveThread extends Thread {
 		
 
 	}
-
 }

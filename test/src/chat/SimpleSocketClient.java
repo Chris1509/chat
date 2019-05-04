@@ -10,36 +10,25 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+
 
 public class SimpleSocketClient {
+	
+	String ServerName;
+	int port;
+	
+	public SimpleSocketClient(String ServerName, int port) {
+		this.ServerName = ServerName;
+		this.port = port;
+	}
+	
 
-	String testServerName = "localhost";
-	int port = 33333;
+	String message =  "dslp/1.2\r\nrequest time\r\ndslp/end\r\n";
 	{
 
 		try {
-
-			Socket socket = openSocket(testServerName, port);
-
-			String start = writeToAndReadFromSocket(socket, "dslp/1.2\r\nrequest time\r\ndslp/end\r\n");
-			String[] abc = start.split("\r\n");
-			for (int i = 0; i < abc.length; i++) {
-				if (abc[i].contains("response time")) {
-
-				}
-				if (abc[i].contains("dslp/end")) {
-					break;
-				}
-
-			}
-
-			// System.out.println(start);
-			// System.out.println(result);
-			// System.out.println(end);
-			// close the socket, and we're done
-			socket.close();
+			Socket socket = openSocket(ServerName, port);			
+				
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -111,4 +100,22 @@ public class SimpleSocketClient {
 		}
 	}
 
+	public void showGroupNotify (String groupName, Socket socket) throws Exception {
+		String message = "dslp/1.2\\r\\ngroup notify\\r\\n\\"+groupName+"\\r\\\\ndslp/end\\r\\n";
+		String start = writeToAndReadFromSocket(socket, message);
+		String[] abc = start.split("\r\n");			
+		
+		for (int i = 0; i < abc.length; i++) {
+			if (abc[i].contains("group notify")) {
+				while(!abc[i].contains("dslp/end")){ // might be more than one line with chatmessages. so print all lines till /end
+					System.out.println(abc[i]);
+				}
+			}
+			if (abc[i].contains("dslp/end")) {
+				break;
+			}
+
+		}		
+	}
+	
 }
